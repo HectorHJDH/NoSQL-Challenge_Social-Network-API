@@ -1,36 +1,30 @@
 const { Schema, model } = require("mongoose");
-const reactionSchema = require('./Reaction');
+const reactionSchema = require("./Reaction"); // Make sure this path is correct for your Reaction schema file
 
-const thoughtSchema = new Schema(
-  {
-    thoughtText: {
-      type: String,
-      required: true,
-      minlength: 1,
-      maxlength: 280,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      get: function (timestamp) {
-        return new Date(timestamp).toISOString();
-      },
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    reactions: [reactionSchema],
+const ThoughtSchema = new Schema({
+  thoughtText: {
+    type: String,
+    required: true,
+    maxlength: 280,
   },
-  {
-    toJSON: { getters: true },
-  }
-);
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    get: function (timestamp) {
+      return new Date(timestamp).toISOString();
+    },
+  },
+  username: {
+    type: String,
+    required: true,
+  },
+  reactions: [reactionSchema], // Assuming you have the correct Reaction schema defined and imported
+});
 
-thoughtSchema.virtual("reactionCount").get(function () {
+ThoughtSchema.virtual("reactionCount").get(function () {
   return this.reactions.length;
 });
 
-const Thought = model("Thought", thoughtSchema);
+const Thought = model("Thought", ThoughtSchema);
 
 module.exports = Thought;

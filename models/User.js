@@ -16,7 +16,7 @@ const UserSchema = new Schema({
   thoughts: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Thought",
+      ref: "Thought", // Reference to the Thought model
     },
   ],
   friends: [

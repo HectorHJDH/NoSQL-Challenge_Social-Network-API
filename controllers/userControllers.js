@@ -15,7 +15,9 @@ module.exports = {
   // get one user by generated id
   async getUserById(req, res) {
     try {
-      const userData = await User.findById(req.params.userId);
+      const userData = await User.findById(req.params.userId).populate(
+        "thoughts" // Populate the thoughts field
+      );
       if (!userData) {
         return res.status(404).json({ message: "No user with that ID" });
       }
