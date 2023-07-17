@@ -12,10 +12,14 @@ module.exports = {
     }
   },
 
-  // get one user by id
-  async getUserById({ params }, res) {
+  // get one user by generated id
+  async getUserById(req, res) {
     try {
-      const userData = await User.findOne({ _id: params.id });
+      // Used req.params.userId because in userRoutes the route is /:userId
+      const userData = await User.findById(req.params.userId);
+      if (!userData) {
+        return res.status(404).json({ message: "No user with that ID" });
+      }
       res.json(userData);
     } catch (err) {
       console.log(err);
