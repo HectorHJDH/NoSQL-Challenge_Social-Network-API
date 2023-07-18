@@ -8,11 +8,8 @@ const ThoughtSchema = new Schema({
     maxlength: 280,
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
-    get: function (timestamp) {
-      return new Date(timestamp).toISOString();
-    },
+    type: String, // Change the type to String
+    default: () => new Date().toLocaleString("en-US"),
   },
   username: {
     type: String,

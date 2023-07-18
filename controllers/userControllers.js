@@ -4,7 +4,29 @@ module.exports = {
   // get all users
   async getUsers(req, res) {
     try {
-      const userData = await User.find();
+      const userData = await User.aggregate([
+        // First stage: Lookup to get friends' data
+        {
+          $lookup: {
+            from: "users",
+            localField: "friends",
+            foreignField: "_id",
+            as: "friendsData",
+          },
+        },
+        // Second stage: Project to include only required fields and friendCount
+        {
+          $project: {
+            _id: 1,
+            username: 1,
+            email: 1,
+            thoughts: 1,
+            friends: 1,
+            friendCount: { $size: "$friendsData" }, // Calculate the friendCount as the size of the friendsData array
+          },
+        },
+      ]);
+
       res.json(userData);
     } catch (err) {
       console.log(err);
@@ -47,7 +69,10 @@ module.exports = {
         req.body,
         { new: true }
       );
-      res.json(userData);
+      if (userData) {
+        return res.status(404).json({ message: "User info updated succesfully" });
+      }
+      return res.status(404).json({ message: "No user found with that Id" });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -58,7 +83,10 @@ module.exports = {
   async deleteUser(req, res) {
     try {
       const userData = await User.findOneAndDelete({ _id: req.params.userId });
-      res.json(userData);
+      if (userData) {
+        return res.status(404).json({ message: "User deleted succesfully" });
+      }
+      return res.status(404).json({ message: "No user found with that Id" });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);

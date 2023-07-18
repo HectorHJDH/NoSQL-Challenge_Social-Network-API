@@ -16,7 +16,7 @@ const UserSchema = new Schema({
   thoughts: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Thought", // Reference to the Thought model
+      ref: "Thought",
     },
   ],
   friends: [
@@ -27,6 +27,7 @@ const UserSchema = new Schema({
   ],
 });
 
+// Add the virtual field "friendCount"
 UserSchema.virtual("friendCount").get(function () {
   return this.friends.length;
 });
