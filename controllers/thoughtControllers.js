@@ -4,7 +4,29 @@ module.exports = {
   // get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughtData = await Thought.find();
+      const thoughtData = await Thought.aggregate([
+        // First stage: Lookup to get reactions data
+        {
+          $lookup: {
+            from: "reactions", // Assuming the collection name for reactions is "reactions"
+            localField: "_id",
+            foreignField: "thoughtId",
+            as: "reactionsData",
+          },
+        },
+        // Second stage: Project to include required fields and reaction count
+        {
+          $project: {
+            _id: 1,
+            thoughtText: 1,
+            username: 1,
+            createdAt: 1,
+            reactions: "$reactionsData",
+            reactionCount: { $size: "$reactionsData" },
+          },
+        },
+      ]);
+
       res.json(thoughtData);
     } catch (err) {
       console.log(err);
